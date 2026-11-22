@@ -249,6 +249,30 @@ layer_state_t layer_state_set_kb(layer_state_t layer_state) {
     return layer_state_set_user(layer_state);
 }
 
+#ifdef RGB_MATRIX_ENABLE
+#define LED_CAPS_LOCK 38
+#define LED_NUM_LOCK 100
+#define LED_INDICATOR_BRIGHTNESS 255
+
+bool rgb_matrix_indicators_kb(void) {
+    if (!rgb_matrix_indicators_user()) {
+        return false;
+    }
+
+    if (!system76_ec_is_unlocked()) {
+        led_t led_state = host_keyboard_led_state();
+        if (led_state.caps_lock) {
+            rgb_matrix_set_color(LED_CAPS_LOCK, LED_INDICATOR_BRIGHTNESS, LED_INDICATOR_BRIGHTNESS, LED_INDICATOR_BRIGHTNESS);
+        }
+        if (led_state.num_lock) {
+            rgb_matrix_set_color(LED_NUM_LOCK, LED_INDICATOR_BRIGHTNESS, LED_INDICATOR_BRIGHTNESS, LED_INDICATOR_BRIGHTNESS);
+        }
+    }
+
+    return true;
+}
+#endif  // RGB_MATRIX_ENABLE
+
 #ifdef CONSOLE_ENABLE
 void keyboard_post_init_user(void) {
     debug_enable   = true;
